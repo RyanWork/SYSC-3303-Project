@@ -278,6 +278,7 @@ public class Server extends Thread {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			int z = 0;
 			//Continually writes data to the file until no more data is available
 			while(available > 0) {
 				receiveMsg = new byte[4];
@@ -290,7 +291,7 @@ public class Server extends Thread {
 				}
 
 				System.out.println("Response received from Client: " + Arrays.toString(receiveMsg) + "\n");
-
+				
 				try {
 					is.read(data);
 				} catch (IOException e1) {
@@ -302,6 +303,8 @@ public class Server extends Thread {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				System.out.println(receivePacket.getData()[z]);
+				z++;
 			}//END Loop
 		}
 

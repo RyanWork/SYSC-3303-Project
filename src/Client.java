@@ -1,5 +1,8 @@
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -89,10 +92,11 @@ public class Client extends Thread
 		msg[1] = 3;				
 		msg[3] = blockNumber;
 
-		//Goes throught the data and adds it to the message
+		//Goes through the data and adds it to the message
 		for(int j = 0, k = 4; j < data.length && k < msg.length; j++, k++)	
 		{
 			msg[k] = data[j];
+			System.out.println(data[j]);
 		}
 
 		//Creates DatagramPacket containing the data and sends it back
@@ -120,7 +124,14 @@ public class Client extends Thread
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
+		//Check if the user is trying to overwrite an existing file in their local directory
+		if(Files.exists(Paths.get(directory.getAbsolutePath() + "\\" + filename))){
+			System.out.println("Failed to write: 0506 - File already exists on local disk: " + filename);
+			System.out.println("Stopping thread process . . .");
+			System.exit(0);
+		}
+			
 		//Creates a file where the data read from sever is stored
 		int index = -1;
 		byte[] receiveMsg;
