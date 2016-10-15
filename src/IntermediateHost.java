@@ -120,6 +120,7 @@ public class IntermediateHost extends Thread {
 			//If request is a read
 			if(request[1] == 1)
 			{
+				System.out.println("Read request");
 				while(true)
 				{
 					//Creates a datagramPacket that will receive data from the server and sends it to the client
@@ -149,7 +150,7 @@ public class IntermediateHost extends Thread {
 						e.printStackTrace();
 					}
 					try {
-						packet = new DatagramPacket(ack, ack.length, InetAddress.getLocalHost(), serverPort);
+						packet = new DatagramPacket(ack, ack.length, InetAddress.getLocalHost(), SERVER_PORT_NUMBER);
 					} catch (UnknownHostException e) {
 						e.printStackTrace();
 					}
@@ -163,22 +164,27 @@ public class IntermediateHost extends Thread {
 			//If request is a write
 			else if(request[1] == 2) 
 			{
+				int temp = 0;
 				while(true)
 				{
 					//Creates a acknowledgement packet and sends it to the client
 					byte[] ack = new byte[4];
 					DatagramPacket packet = new DatagramPacket(ack, ack.length);
 					try {
+						System.out.println("Receiving ACK packet");
 						socket.receive(packet);
+						temp = packet.getPort();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 					try {
+						System.out.println("Cloning ack");
 						packet = new DatagramPacket(ack, ack.length, InetAddress.getLocalHost(), clientPort);
 					} catch (UnknownHostException e) {
 						e.printStackTrace();
 					}
 					try {
+						System.out.println("Sending Ack to client: " + clientPort);
 						socket.send(packet);
 					} catch (IOException e1) {
 						e1.printStackTrace();
@@ -187,16 +193,19 @@ public class IntermediateHost extends Thread {
 					byte[] data = new byte[516];
 					packet = new DatagramPacket(data, data.length);
 					try {
+						System.out.println("Receiving Data from client");
 						socket.receive(packet);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 					try {
-						packet = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), serverPort);
+						System.out.println("Cloning data packet");
+						packet = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), temp);
 					} catch (UnknownHostException e) {
 						e.printStackTrace();
 					}
 					try {
+						System.out.println("Sending data packet to server:" + temp);
 						socket.send(packet);
 					} catch (IOException e) {
 						e.printStackTrace();

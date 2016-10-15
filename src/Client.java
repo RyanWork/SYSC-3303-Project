@@ -96,7 +96,6 @@ public class Client extends Thread
 		for(int j = 0, k = 4; j < data.length && k < msg.length; j++, k++)	
 		{
 			msg[k] = data[j];
-			System.out.println(data[j]);
 		}
 
 		//Creates DatagramPacket containing the data and sends it back
@@ -152,7 +151,6 @@ public class Client extends Thread
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
 			String code = "";
 			switch(receivePacket.getData()[3]){
 			case 1:
@@ -210,7 +208,7 @@ public class Client extends Thread
 	}
 
 	/*
-	 *	Runs the read request (ie. sends initial request then reads the data from the server)
+	 *	Runs the write request (ie. sends initial request then writes the data to the server)
 	 */
 	private synchronized void sendWriteReceive(String filename)
 	{
@@ -246,12 +244,12 @@ public class Client extends Thread
 
 			DatagramPacket receivePacket = new DatagramPacket(receiveMsg, receiveMsg.length);	
 			try {
+				System.out.println("Waiting for response.");
 				socket.receive(receivePacket);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-
 			String code = "";
 			switch(receivePacket.getData()[3]){
 			case 2:
@@ -280,6 +278,7 @@ public class Client extends Thread
 			}
 			DatagramPacket msg = buildData(data, i++, receivePacket.getPort());
 			try {
+				System.out.println("Sending data. . .");
 				socket.send(msg);
 			} catch (IOException e) {
 				e.printStackTrace();

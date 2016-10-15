@@ -115,7 +115,6 @@ public class Server extends Thread {
 			//Build "file" object from the specified filepath
 			File f = new File(this.directory + "\\" + filename);
 			Path path = Paths.get(this.directory + "\\" + filename);
-			
 			//Creates new read thread with filename
 			if(msg[1] == 1)
 			{
@@ -140,9 +139,16 @@ public class Server extends Thread {
 			}
 			//Creates new write thread with filename
 			else
-			{
+			{/*
+				System.out.println(f.getFreeSpace() + " " + receivedPacket.getData().length);
+				//Check if the file already exists
+				 if(Files.exists(path)){
+					System.out.println("Failed to write: 0506 - File already exists " + filename);
+					System.out.println("Sending error packet . . .");
+					createSendError(new Byte("6"), receivedPacket, receiveSocket);
+				}
 				//Check if can write
-				if(!f.canWrite()){
+				 else if(Files.isWritable(path)){
 					System.out.println("Failed to read: 0502 - Access Violation. " + filename);
 					System.out.println("Sending error packet . . .");
 					createSendError(new Byte("2"), receivedPacket, receiveSocket);
@@ -153,17 +159,12 @@ public class Server extends Thread {
 					System.out.println("Sending error packet . . .");
 					createSendError(new Byte("3"), receivedPacket, receiveSocket);
 				}
-				//Check if the file already exists
-				else if(Files.exists(path)){
-					System.out.println("Failed to write: 0506 - File already exists " + filename);
-					System.out.println("Sending error packet . . .");
-					createSendError(new Byte("6"), receivedPacket, receiveSocket);
-				}
-				else{
+
+				else{*/
 					System.out.println("The request is a valid write request.");
 					System.out.println(filename);
 					addThread(new WriteThread(receivedPacket.getPort(), filename));
-				}
+				//}
 			}
 		}
 	}
@@ -278,7 +279,6 @@ public class Server extends Thread {
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			int z = 0;
 			//Continually writes data to the file until no more data is available
 			while(available > 0) {
 				receiveMsg = new byte[4];
@@ -303,8 +303,6 @@ public class Server extends Thread {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				System.out.println(receivePacket.getData()[z]);
-				z++;
 			}//END Loop
 		}
 
@@ -416,7 +414,6 @@ public class Server extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 			//Sets up fileOuputStream
 			int index = -1;
 			byte[] receiveMsg;
@@ -433,11 +430,11 @@ public class Server extends Thread {
 				receiveMsg = new byte[516];
 				DatagramPacket receivePacket = new DatagramPacket(receiveMsg, receiveMsg.length);
 				try {
+					System.out.println("Waiting for data . . .");
 					socket.receive(receivePacket);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
 				for(int i = 4; i < receiveMsg.length; i++) {
 					if(receiveMsg[i] == 0){
 						index = i;
@@ -457,6 +454,7 @@ public class Server extends Thread {
 					try {			
 						DatagramPacket ack = new DatagramPacket(b, b.length, InetAddress.getLocalHost(), receivePacket.getPort());
 						try {
+							System.out.println("Sending Ack . . .");
 							socket.send(ack);
 						}catch (IOException IOE){
 							IOE.printStackTrace();
