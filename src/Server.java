@@ -142,7 +142,7 @@ public class Server extends Thread {
 			else
 			{
 				//Check if can write
-				if(!Files.isWritable(path)){
+				if(!f.canWrite()){
 					System.out.println("Failed to read: 0502 - Access Violation. " + filename);
 					System.out.println("Sending error packet . . .");
 					createSendError(new Byte("2"), receivedPacket, receiveSocket);

@@ -152,7 +152,7 @@ public class Client extends Thread
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
+			
 			String code = "";
 			switch(receivePacket.getData()[3]){
 			case 1:
