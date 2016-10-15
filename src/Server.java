@@ -184,6 +184,14 @@ public class Server extends Thread {
 		}
 	}
 
+	private void deleteFailedFile(Path path){
+		try {
+			Files.delete(path);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 	/*
 	 * Enables the user to select which directory will act as the server's file system
