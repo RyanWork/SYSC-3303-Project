@@ -104,8 +104,8 @@ public class Server extends Thread {
 					i = msg.length;
 				}
 			}
-			byte[] b = new byte[index - 4];
-			int j = 4;
+			byte[] b = new byte[index - 2];
+			int j = 2;
 			for(int i = 0; i < b.length; i++, j++)
 			{
 				b[i] = msg[j];
@@ -116,12 +116,13 @@ public class Server extends Thread {
 			File f = new File(this.directory + "\\" + filename);
 			Path path = Paths.get(this.directory + "\\" + filename);
 			System.out.println(f.canRead() + " " + f.setReadable(false) + " " + Files.isReadable(path) + " " + Files.isWritable(path));
+			System.out.println(filename + " "  + path);
 			
 			//Creates new read thread with filename
 			if(msg[1] == 1)
 			{
 				//Check if file exists
-				if(!f.exists())
+				if(!Files.exists(path))
 				{
 					System.out.println("Failed to read: 0501 - File not found. " + filename);
 					System.out.println("Sending error packet . . .");
@@ -155,7 +156,7 @@ public class Server extends Thread {
 					createSendError(new Byte("3"), receivedPacket, receiveSocket);
 				}
 				//Check if the file already exists
-				/*else if(f.exists()){
+				/*else if(Files.exists()){
 					System.out.println("Failed to write: 0506 - File already exists " + filename);
 					System.out.println("Sending error packet . . .");
 					createSendError(new Byte("6"), receivedPacket, receiveSocket);
