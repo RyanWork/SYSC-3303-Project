@@ -115,8 +115,6 @@ public class Server extends Thread {
 			//Build "file" object from the specified filepath
 			File f = new File(this.directory + "\\" + filename);
 			Path path = Paths.get(this.directory + "\\" + filename);
-			System.out.println(f.canRead() + " " + f.setReadable(false) + " " + Files.isReadable(path) + " " + Files.isWritable(path));
-			System.out.println(filename + " "  + path);
 			
 			//Creates new read thread with filename
 			if(msg[1] == 1)
