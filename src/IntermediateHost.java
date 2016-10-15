@@ -164,7 +164,6 @@ public class IntermediateHost extends Thread {
 			//If request is a write
 			else if(request[1] == 2) 
 			{
-				int temp = 0;
 				while(true)
 				{
 					//Creates a acknowledgement packet and sends it to the client
@@ -173,10 +172,10 @@ public class IntermediateHost extends Thread {
 					try {
 						System.out.println("Receiving ACK packet");
 						socket.receive(packet);
-						temp = packet.getPort();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+					serverPort = packet.getPort();
 					try {
 						System.out.println("Cloning ack");
 						packet = new DatagramPacket(ack, ack.length, InetAddress.getLocalHost(), clientPort);
@@ -200,12 +199,12 @@ public class IntermediateHost extends Thread {
 					}
 					try {
 						System.out.println("Cloning data packet");
-						packet = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), temp);
+						packet = new DatagramPacket(data, data.length, InetAddress.getLocalHost(), serverPort);
 					} catch (UnknownHostException e) {
 						e.printStackTrace();
 					}
 					try {
-						System.out.println("Sending data packet to server:" + temp);
+						System.out.println("Sending data packet to server:" + serverPort);
 						socket.send(packet);
 					} catch (IOException e) {
 						e.printStackTrace();
