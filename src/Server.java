@@ -154,11 +154,11 @@ public class Server extends Thread {
 					createSendError(new Byte("3"), receivedPacket, receiveSocket);
 				}
 				//Check if the file already exists
-				/*else if(Files.exists()){
+				else if(Files.exists(path)){
 					System.out.println("Failed to write: 0506 - File already exists " + filename);
 					System.out.println("Sending error packet . . .");
 					createSendError(new Byte("6"), receivedPacket, receiveSocket);
-				}*/
+				}
 				else{
 					System.out.println("The request is a valid write request.");
 					System.out.println(filename);
