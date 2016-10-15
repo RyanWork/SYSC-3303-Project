@@ -140,7 +140,6 @@ public class Server extends Thread {
 			//Creates new write thread with filename
 			else
 			{
-				System.out.println(f.getFreeSpace() + " " + receivedPacket.getData().length);
 				//Check if the file already exists
 				 if(Files.exists(path)){
 					System.out.println("Failed to write: 0506 - File already exists " + filename);
@@ -154,7 +153,7 @@ public class Server extends Thread {
 					createSendError(new Byte("2"), receivedPacket, receiveSocket);
 				}
 				//Check if there is enough space on the server
-				else if(f.getFreeSpace() < receivedPacket.getData().length){
+				else if(f.getParentFile().getFreeSpace() < receivedPacket.getData().length){
 					System.out.println("Failed to write: 0503 - Not enough disk space. " + filename);
 					System.out.println("Sending error packet . . .");
 					createSendError(new Byte("3"), receivedPacket, receiveSocket);
