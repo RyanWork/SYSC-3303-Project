@@ -138,7 +138,9 @@ public class Client extends Thread
 		try {
 			fos = new FileOutputStream(new File(directory.getAbsolutePath() + "\\" + filename)); 
 		} catch (FileNotFoundException e1) {
+			System.out.println("Error packet received. Code: 0501 File not found. Stopping request.");
 			e1.printStackTrace();
+			System.exit(0);
 		}
 
 		//Keeps reading data until server is done sending for the request
@@ -151,6 +153,7 @@ public class Client extends Thread
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			String code = "";
 			switch(receivePacket.getData()[3]){
 			case 1:
@@ -163,20 +166,37 @@ public class Client extends Thread
 
 			if(receivePacket.getData()[3] == 1 || receivePacket.getData()[3] == 2 && receivePacket.getData()[1] == 5){
 				System.out.println("Error packet received. Code: 050" + receivePacket.getData()[3] + " " + code + ". Stopping request.");
+				try {
+					fos.close();
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				try {
+					Files.delete(Paths.get(directory.getAbsolutePath() + "\\" + filename));
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 				System.exit(0);
 			}
-
-			for(int i = 4; i < receiveMsg.length; i++) {
-				if(receiveMsg[i] == 0){
-					index = i;
-					i = receiveMsg.length;
-				}
-			}
+			
+			//Copies the data into a new array
+	    	byte[] data = new byte[512];
+	    	for(int i = 0, j = 4; i < data.length; i++, j++)
+	    	{
+	    		data[i] = receiveMsg[j];
+	    	}
+		
+	    	for(int i = 0; i < data.length; i++) {
+	    		if(data[i] == 0){
+	    			index = i;
+	    			i = data.length;
+	    		}
+	    	}
 
 			//Writes received message into the file
 			if(index == -1){			
 				try {
-					fos.write(receiveMsg);
+					fos.write(data);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -198,11 +218,16 @@ public class Client extends Thread
 			}
 			//Writes last bit of the received data
 			else{		
-				try {
-					fos.write(receiveMsg, 0, index);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+	  			try {
+	 				fos.write(data, 0, index);
+	 			} catch (IOException e) {
+	 				e.printStackTrace();
+	 			}
+	 			try {
+	 				fos.close();
+	  			} catch (IOException e) {
+	  				e.printStackTrace();
+	  			}
 			}
 		}
 	}
@@ -225,7 +250,7 @@ public class Client extends Thread
 		byte[] data = new byte[512];
 		FileInputStream is = null;		
 		try {
-			is = new FileInputStream(directory.getAbsolutePath() + "\\" +filename);
+			is = new FileInputStream(directory.getAbsolutePath() + "\\" + filename);
 		} catch (FileNotFoundException e2) {
 			e2.printStackTrace();
 		}
@@ -270,7 +295,7 @@ public class Client extends Thread
 			
 			System.out.println("Response received from Host: " + Arrays.toString(receiveMsg) + "\n");
 
-			//Writes data into the file
+			//Reads data into the file
 			try {				
 				is.read(data);
 			} catch (IOException e1) {
@@ -284,6 +309,11 @@ public class Client extends Thread
 				e.printStackTrace();
 			}
 		}//END Loop
+		try {
+			is.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 
@@ -317,11 +347,11 @@ public class Client extends Thread
 		{
 			newRequest = false;
 			Scanner s = new Scanner(System.in);
-			System.out.println("Please write the name of the file you would like to read/write.");
-			String filename = s.nextLine();
 			System.out.println("For a read request, enter r or read.");
 			System.out.println("For a write request, enter w or write.");
 			String request = s.next();
+			System.out.println("Please write the name of the file you would like to read/write.");
+			String filename = s.next();
 			if(request.equals("read") || request.equals("R") || request.equals("r"))
 			{
 				sendReadReceive(filename);
